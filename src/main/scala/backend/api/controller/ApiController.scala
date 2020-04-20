@@ -17,9 +17,10 @@ class ApiController extends AccountOperation with AccountValidation with Account
   override def createGame(): Future[Option[Hangman]] =
     Future {
               // Generate random game id.. use bloom filter to check for existence
-              val gameId = randGenerator.nextInt()
+              var gameId = randGenerator.nextInt()
+              if(gameId < 0) gameId = -1 * gameId
               // Number of guesses
-              val num_guesses =  6 + scala.util.Random.nextInt(5) // scalastyle:ignore
+              val num_guesses =  10 // scalastyle:ignore
               var guesses = Guess(num_guesses, num_guesses, 0)
               // Get a random Generated word
               val gameWord = "HANGMAN"
@@ -34,7 +35,6 @@ class ApiController extends AccountOperation with AccountValidation with Account
 
   override def retrieveGame(gameID: String): Future[Option[Game]] =
     Future{
-
         val userGame = gameMap.get(gameID).get
         val response = userGame.game
         Option(response)
@@ -45,15 +45,10 @@ class ApiController extends AccountOperation with AccountValidation with Account
     val userGame = gameMap.get(game_id.toString).get
     val word = userGame.word
     var game = userGame.game
-
     val game_guess = game.guesses
-    game_guess.num_guesses_left -= 1
-    game_guess.num_guesses_used +=1
-
     var game_status = game.status
     var guessedWord = game_status.word
     var wrong_guesses = game_status.wrong_guesses
-
     val count = word.count(_ == guess)
     if(count > 0)
       {
@@ -65,11 +60,11 @@ class ApiController extends AccountOperation with AccountValidation with Account
           index = newIndex
         }
         if(guessedWord.mkString("") == word) game_status.game_over = true // scalastyle:ignore
-        else
-            if(game_guess.num_guesses_left == 0) game_status.game_over = true
       }
     else
       {
+        game_guess.num_guesses_left -= 1
+        game_guess.num_guesses_used +=1
         var termCond = true
         var index = 0
         while(termCond)
