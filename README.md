@@ -40,7 +40,7 @@ The EndPoints available on the server:
 | ------ | ------ | ------ |
 | POST | /createGame | {} |
 | GET | /retrieveGame/<gameID> | *not required* |
-| POST | /submitGuess | {"game_id": "1608240105","guess" : "P"} |
+| POST | /submitGuess | {"game_id": "1608240105","guess" : "P"} 
 
 
 
@@ -49,7 +49,7 @@ There are three endpoints
  (**retriveGame**) that can retrieve  game state 
  (**submitGuess**) that allows to guess a character in the word 
 
-#### 1.2 Transactional Memory and Concurrency Control
+#### 1.3 Transactional Memory and Concurrency Control
 
 The **ScalaSTM** was used to store the data in memory and control of the concurrency.
 
@@ -57,7 +57,7 @@ The **ScalaSTM** was used to store the data in memory and control of the concurr
   
 
 
-#### 1.3 Other Tools Used
+#### 1.4 Other Tools Used
 
 Other tools used in the project are in the order below:
 
