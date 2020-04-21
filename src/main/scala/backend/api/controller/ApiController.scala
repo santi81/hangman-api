@@ -15,28 +15,27 @@ class ApiController extends GameOperation with GameError {
   private[this] val gameMap = HashMap[String,UserGame]()
   private[this] val randGenerator = scala.util.Random
   randGenerator.setSeed(1000000)
+  //scala-style:ignore
   implicit val redisCache: Cache[UserGame] = RedisCache("redis-cluster", 6379)
   override def createGame(): Future[Option[Hangman]] =
     Future {
               // Generate random game id.. use bloom filter to check for existence
-              var gameId = randGenerator.nextInt()
-              if(gameId < 0) gameId = -1 * gameId
-              // Number of guesses
-              val num_guesses =  Constants.numGuesses
-              var guesses = Guess(num_guesses, num_guesses, 0)
-              // Get a random Generated word
-              val gameWord = URLFetcher.fetchRandomWord().toUpperCase
-              var gameStatus = GameStatus(gameWord.length, Array.fill(gameWord.length)(' '),
-                Array.fill(num_guesses)(' '), false)
-              // Store the Game
-              val game = Game(gameId.toString, guesses, gameStatus)
-              val userGame = UserGame(game, gameWord)
-/*              import scalacache.modes.try_._
-              put(gameId.toString)(userGame)
-              val result = get(gameId.toString)
-              println(result)*/
-              gameMap.put(gameId.toString, userGame)
-              Option(Hangman(gameId))
+      atomic { implicit tx =>
+        var gameId = randGenerator.nextInt()
+        if (gameId < 0) gameId = -1 * gameId
+        // Number of guesses
+        val num_guesses = Constants.numGuesses
+        var guesses = Guess(num_guesses, num_guesses, 0)
+        // Get a random Generated word
+        val gameWord = URLFetcher.fetchRandomWord().toUpperCase
+        var gameStatus = GameStatus(gameWord.length, Array.fill(gameWord.length)(' '),
+          Array.fill(num_guesses)(' '), false)
+        // Store the Game
+        val game = Game(gameId.toString, guesses, gameStatus)
+        val userGame = UserGame(game, gameWord)
+        gameMap.put(gameId.toString, userGame)
+        Option(Hangman(gameId))
+      }
     }
   override def retrieveGame(gameID: String): Future[Either[NonExistentGameException, Game]] =
     Future{
