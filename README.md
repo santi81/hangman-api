@@ -19,10 +19,11 @@ To build a request and response Http Rest Server, **Finagle-Finch** was used:
   - [https://twitter.github.io/finagle/](https://twitter.github.io/finagle/)
   - [https://finagle.github.io/finch/](https://finagle.github.io/finch/)
 
-#### 1.2 Redis
-Scala Cache was used as a facade for cache implementations [Work in Progress]
-The following cache implementations are supported, and it’s easy to plugin your own implementation:
-  - Redis
+#### 1.2 Redis/Cache
+Scala Cache was used as a facade for cache implementations - Work in Progress
+Fundamental approach would be to be able to abstract based on config to use in memory cache or other cache implementations
+or plugin your own implementation:
+  - Redis 
   - Google Guava
   - Memcached
   - Ehcache
@@ -109,7 +110,7 @@ To build the project on the machine it is necessary to have the programs install
 
 ## 3 Installation
 
-The following procedures were using a Linux machine running on Ubuntu-64 18.04.2 LTS.
+T
 
 #### 3.1 Install JDK
 
@@ -133,9 +134,18 @@ $ sudo mv sbt /opt/sbt
 $ export PATH=/opt/sbt/bin:${PATH}
 ```
 
+#### 3.2 Install Redis
+
+```sh
+$ brew install redis
+$ redis-server /usr/local/etc/redis.conf
+$ redis-cli ping
+If it replies “PONG”, then it’s good to go!
+```
+
 > Note: You can also use OpenJDK, find out how to install OpenJDK in your distribution.
 
-### 3.2 Building and Testing  Application
+### 3.3 Building and Testing  Application
 
 To build the application just run:
 
