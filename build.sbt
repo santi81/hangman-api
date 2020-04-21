@@ -30,6 +30,8 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-jdk14" % "1.7.21",
   "org.wvlet.airframe" %% "airframe-log" % "19.7.2",
   "org.json4s" %% "json4s-native" % "3.6.0-M3",
+  "net.debasishg" %% "redisclient" % "3.20",
+  "com.github.cb372" %% "scalacache-redis" % "0.28.0",
   "org.scalatest" %% "scalatest" % "3.0.7" % Test,
 )
 

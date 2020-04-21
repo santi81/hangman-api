@@ -10,7 +10,7 @@ import io.finch.syntax._
 object Routes {
 
   import backend.api.controller.ApiController
-  import backend.api.model.{AccountFillRequest, AccountTransaction, Game, GameCreateRequest, Hangman}
+  import backend.api.model.{ Game, GameCreateRequest, Hangman}
   private lazy val apiController = ApiController()
 
 
@@ -21,27 +21,20 @@ object Routes {
       } yield Ok(r)
     }
 
-  final val retrieveGame: Endpoint[Option[Game]] =
+  final val retrieveGame: Endpoint[Game] =
     get("retrieveGame" :: path[String]) {req: String =>
       for {
         r <- apiController.retrieveGame(req)
-      } yield Ok(r)
+      } yield r match {
+      case Right(a) => Ok(a)
+      case Left(m) => BadRequest(m)
+      }
     }
 
   final val submitGuess: Endpoint[Game] =
     post("submitGuess" :: jsonBody[SubmitGuessRequest]) { req: SubmitGuessRequest =>
       for {
         r <- apiController.submitGuess(req.game_id, req.guess)
-      } yield r match {
-        case Right(a) => Ok(a)
-        case Left(m) => BadRequest(m)
-      }
-    }
-
-  final val fillAccount: Endpoint[AccountTransaction] =
-    post("account" :: jsonBody[AccountFillRequest]) {req: AccountFillRequest =>
-      for {
-        r <- apiController.fillAccount(req.uuid, req.amount)
       } yield r match {
         case Right(a) => Ok(a)
         case Left(m) => BadRequest(m)

@@ -19,12 +19,11 @@ class ServerImpl extends TwitterServer with Config {
       maxConcurrentRequests = serverConf.maxConcurrentRequests,
       maxWaiters = serverConf.maxWaiters
     ).serve(s"${serverConf.host}:${serverConf.port}",
-      (Routes.createGame :+: Routes.retrieveGame :+: Routes.submitGuess :+: Routes.fillAccount).toService)
+      (Routes.createGame :+: Routes.retrieveGame :+: Routes.submitGuess).toService)
 
     onExit {
       app.close()
     }
-
     Await.ready(app)
   }
 }
