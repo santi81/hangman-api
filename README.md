@@ -21,6 +21,8 @@ To build a request and response Http Rest Server, **Finagle-Finch** was used:
 
 #### 1.2 Redis/Cache
 Scala Cache was used as a facade for cache implementations - Work in Progress
+
+
 Fundamental approach would be to be able to abstract based on config to use in memory cache or other cache implementations
 or plugin your own implementation:
   - Redis 
