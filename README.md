@@ -19,7 +19,16 @@ To build a request and response Http Rest Server, **Finagle-Finch** was used:
   - [https://twitter.github.io/finagle/](https://twitter.github.io/finagle/)
   - [https://finagle.github.io/finch/](https://finagle.github.io/finch/)
 
-
+#### 1.2 Redis
+Scala Cache was used as a facade for cache implementations [Work in Progress]
+The following cache implementations are supported, and it’s easy to plugin your own implementation:
+  Redis
+  Google Guava
+  Memcached
+  Ehcache
+  Caffeine
+  cache2k
+  OHC
 ```
 
 The EndPoints available on the server:
