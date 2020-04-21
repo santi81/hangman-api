@@ -1,27 +1,6 @@
 
-
-### Project Structure:
-
-| Directory | Comments |
-| ------ | ------ | 
-| src/main/scala/backend/api/**domain** | Contains class models and business logic |
-| src/main/scala/backend/api/**model** | Contains template class and interface | 
-| src/main/scala/backend/api/**interceptors** | Classes with templates with errors and exceptions |
-| src/main/scala/backend/api/**controller** | Game control services |
-| src/test/scala/backend/api/**unit** | The unit testing of the application |
-| src/test/scala/backend/api/**integration** | Client http application for integrated testing |
-
-
-#### 1.1 Http Rest Server
-
-To build a request and response Http Rest Server, **Finagle-Finch** was used:
-
-  - [https://twitter.github.io/finagle/](https://twitter.github.io/finagle/)
-  - [https://finagle.github.io/finch/](https://finagle.github.io/finch/)
-
-#### 1.2 Redis/Cache
+#### 1.1 Redis/Cache
 Scala Cache was used as a facade for cache implementations - Work in Progress
-
 
 Fundamental approach would be to be able to abstract based on config to use in memory cache or other cache implementations
 or plugin your own implementation:
@@ -32,10 +11,16 @@ or plugin your own implementation:
   - Caffeine
   - cache2k
   - OHC
-  
-  
-```
 
+#### 1.2 Http Rest Server
+
+To build a request and response Http Rest Server, **Finagle-Finch** was used:
+
+  - [https://twitter.github.io/finagle/](https://twitter.github.io/finagle/)
+  - [https://finagle.github.io/finch/](https://finagle.github.io/finch/)
+
+
+```
 The EndPoints available on the server: Support Swagger API Definition 
 
 | Method | EndPoint | Example Parameter|
@@ -45,59 +30,29 @@ The EndPoints available on the server: Support Swagger API Definition
 | POST | /submitGuess | {"game_id": "1608240105","guess" : "P"} 
 
 
-
-There are three endpoints
- (**createGame**) that can create a new Game  
- (**retrieveGame**) that can retrieve  game state 
- (**submitGuess**) that allows to guess a character in the word 
-
 ```
-#### 1.3 Transactional Memory and Concurrency Control
+#### 1.3 Concurrency Control
 
-The **ScalaSTM** was used to store the data in memory and control of the concurrency.
+**ScalaSTM** was used to store the data in memory and control of the concurrency.
 
   - [https://nbronson.github.io/scala-stm/](https://nbronson.github.io/scala-stm/)
-  
-
-
-#### 1.4 Other Tools Used
-
-Other tools used in the project are in the order below:
-
-  - [https://github.com/lightbend/config](https://github.com/lightbend/config) - Configuration library
-  - [http://www.scalatest.org/](http://www.scalatest.org/) - Tests
-  
+    
 
 ## 2 Requirements
 
-First, have the project folder unzipped on your machine and the terminal open.
-
-### 2.1 Docker
-
-A **Docker** image has been generated that can be used for testing, so it is necessary to have the docker installed on your machine. 
-
-### 2.2 Create Docker Image
-
-
+### 2.1 Create Docker Image
 
 ```sh
 $ docker build -t <image-tag> . 
 ```
-
-> Note: Please install docker in your Linux distribution.
-
-With docker already installed on your machine, list docker images using the command:
-
-```sh
-$ docker images
-```
-
 Start docker with the image to do the tests:
 
 ```sh
+$ docker pull redis
+$ docker run redis
 $ docker run -p 9905:9905 <image-tag>
 ```
-
+$ 
 Docker will run the unit tests and then start the server. Wait until the server loads the message:
 
 > *** Stating HTTP Server ****
@@ -116,7 +71,16 @@ To build the project on the machine it is necessary to have the programs install
 
 ## 3 Installation
 
-#### 3.1 Install JDK
+#### 3.1 Install Redis
+
+```sh
+$ brew install redis
+$ redis-server /usr/local/etc/redis.conf
+$ redis-cli ping
+If it replies “PONG”, then it’s good to go!
+```
+
+#### 3.2 Install JDK
 
 For JDK installation:
 
@@ -127,7 +91,7 @@ $ export JAVA_HOME=/opt/jdk1.8.0
 $ export PATH=/opt/jdk1.8.0/bin:${PATH}
 ```
 
-#### 3.2 Install SBT
+#### 3.3 Install SBT
 
 For SBT installation:
 
@@ -137,17 +101,6 @@ $ tar xfv sbt-1.2.8.tgz
 $ sudo mv sbt /opt/sbt
 $ export PATH=/opt/sbt/bin:${PATH}
 ```
-
-#### 3.3 Install Redis
-
-```sh
-$ brew install redis
-$ redis-server /usr/local/etc/redis.conf
-$ redis-cli ping
-If it replies “PONG”, then it’s good to go!
-```
-
-> Note: You can also use OpenJDK, find out how to install OpenJDK in your distribution.
 
 ### 3.4 Building and Testing  Application
 
@@ -162,12 +115,6 @@ You can also run unit tests like this:
 
 ```sh
 $ sbt clean coverage test coverageReport
-```
-
-Checking the [ScalaStyle](http://www.scalastyle.org/) code:
-
-```sh
-$ sbt scalastyle
 ```
 
 When you receive the message on the terminal after the *sbt run*:
