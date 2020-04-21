@@ -36,7 +36,7 @@ or plugin your own implementation:
   
 ```
 
-The EndPoints available on the server:
+The EndPoints available on the server: Support Swagger API Definition 
 
 | Method | EndPoint | Example Parameter|
 | ------ | ------ | ------ |
