@@ -32,6 +32,8 @@ or plugin your own implementation:
   - Caffeine
   - cache2k
   - OHC
+  
+  
 ```
 
 The EndPoints available on the server:
@@ -46,9 +48,10 @@ The EndPoints available on the server:
 
 There are three endpoints
  (**createGame**) that can create a new Game  
- (**retriveGame**) that can retrieve  game state 
+ (**retrieveGame**) that can retrieve  game state 
  (**submitGuess**) that allows to guess a character in the word 
 
+```
 #### 1.3 Transactional Memory and Concurrency Control
 
 The **ScalaSTM** was used to store the data in memory and control of the concurrency.
@@ -63,6 +66,7 @@ Other tools used in the project are in the order below:
 
   - [https://github.com/lightbend/config](https://github.com/lightbend/config) - Configuration library
   - [http://www.scalatest.org/](http://www.scalatest.org/) - Tests
+  
 
 ## 2 Requirements
 
@@ -112,8 +116,6 @@ To build the project on the machine it is necessary to have the programs install
 
 ## 3 Installation
 
-T
-
 #### 3.1 Install JDK
 
 For JDK installation:
@@ -125,7 +127,7 @@ $ export JAVA_HOME=/opt/jdk1.8.0
 $ export PATH=/opt/jdk1.8.0/bin:${PATH}
 ```
 
-#### 3.1 Install SBT
+#### 3.2 Install SBT
 
 For SBT installation:
 
@@ -136,7 +138,7 @@ $ sudo mv sbt /opt/sbt
 $ export PATH=/opt/sbt/bin:${PATH}
 ```
 
-#### 3.2 Install Redis
+#### 3.3 Install Redis
 
 ```sh
 $ brew install redis
@@ -147,7 +149,7 @@ If it replies “PONG”, then it’s good to go!
 
 > Note: You can also use OpenJDK, find out how to install OpenJDK in your distribution.
 
-### 3.3 Building and Testing  Application
+### 3.4 Building and Testing  Application
 
 To build the application just run:
 
@@ -177,7 +179,7 @@ On another terminal run the command:
 
 
 
-### 3.3 More Test Commands
+### 3.5 More Test Commands
 
 Creating a new game manually via curl: 
 
@@ -277,7 +279,7 @@ $ curl -i -H "Content-Type: application/json" -X POST -d '{"game_id":"1608240105
 
 If necessary, you can change the host and port configuration of the server. This can be checked at:  [src/main/resources/application.conf](https://github.com/edersoncorbari/sparrow-account/blob/master/src/main/resources/application.conf)
 
-### 3.4 Integration Test
+### 3.6 Integration Test
 
 A small HTTP client server was created to do the integrated test. To run the server it is necessary to compile the code via SBT and it is necessary that the server is running via **local** compilation or in the **docker**.
 
