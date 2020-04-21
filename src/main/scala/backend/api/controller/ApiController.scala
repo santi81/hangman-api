@@ -1,27 +1,32 @@
 package backend.api.controller
 
-import backend.api.interceptors.{ GameError}
+import backend.api.interceptors.GameError
 import backend.api.model.{Game, GameOperation, GameStatus, Guess, Hangman, UserGame}
 import backend.api.util.{Constants, URLFetcher}
 import com.twitter.util.Future
+import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.stm._
 import scala.collection.mutable.HashMap
-import scalacache.redis._
 import scalacache._
+import scalacache.redis._
+import scalacache.modes.sync._
 import scalacache.serialization.binary._
 
 class ApiController extends GameOperation with GameError {
-  private[this] val gameMap = HashMap[String,UserGame]()
+
+  //scala-style:ignore
+  val config = ConfigFactory.load("application.conf").getConfig("backend.api.server")
+  val redisConfig = config.getConfig("redis")
+  implicit val redisCache: Cache[UserGame] = RedisCache(redisConfig.getString("host"),
+    redisConfig.getInt("port"))
   private[this] val randGenerator = scala.util.Random
   randGenerator.setSeed(1000000)
-  //scala-style:ignore
-  implicit val redisCache: Cache[UserGame] = RedisCache("redis-cluster", 6379)
+
   override def createGame(): Future[Option[Hangman]] =
     Future {
-              // Generate random game id.. use bloom filter to check for existence
       atomic { implicit tx =>
-        var gameId = randGenerator.nextInt()
+        var gameId = randGenerator.nextInt()  // Generate random game id.. use bloom filter to check for existence
         if (gameId < 0) gameId = -1 * gameId
         // Number of guesses
         val num_guesses = Constants.numGuesses
@@ -33,13 +38,18 @@ class ApiController extends GameOperation with GameError {
         // Store the Game
         val game = Game(gameId.toString, guesses, gameStatus)
         val userGame = UserGame(game, gameWord)
-        gameMap.put(gameId.toString, userGame)
+        //Use binary codec as default  for serialization
+        import scalacache.serialization.binary._
+        redisCache.put(keyParts = gameId.toString)(value = userGame)
         Option(Hangman(gameId))
       }
     }
   override def retrieveGame(gameID: String): Future[Either[NonExistentGameException, Game]] =
     Future{
-        val userGameOption = gameMap.get(gameID)
+        //val userGameOption = gameMap.get(gameID)
+        //Use binary codec as default  for serialization
+        import scalacache.serialization.binary._
+        val userGameOption = redisCache.get(keyParts = gameID);
         userGameOption match
         {
           case Some(userGame) =>
@@ -51,7 +61,8 @@ class ApiController extends GameOperation with GameError {
     }
   // scalastyle:ignore
   override def submitGuess(game_id: Int, guess: Char): Future[Either[NonExistentGameException, Game]] = Future {
-    val userGameOption = gameMap.get(game_id.toString)
+    import scalacache.serialization.binary._
+    val userGameOption = redisCache.get(keyParts = game_id.toString)
     userGameOption match
     {
       case Some(userGame) =>
@@ -83,6 +94,9 @@ class ApiController extends GameOperation with GameError {
             if(game_guess.num_guesses_left == 0) {
               game_status.game_over = true
               game_status.word = word.toCharArray}}
+          //Use binary codec as default  for serialization
+          import scalacache.serialization.binary._
+          redisCache.put(keyParts = game_id.toString)(value = userGame)
           Right(userGame.game)}
       case None =>
         Left(NonExistentGameException("Game Does not exist"))
